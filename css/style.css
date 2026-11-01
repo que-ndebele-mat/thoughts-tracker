@@ -1,0 +1,295 @@
+:root {
+  color-scheme: light dark;
+  --bg: #faf9f7;
+  --fg: #1f1f1f;
+  --muted: #6b6b6b;
+  --accent: #5b6ef5;
+  --accent-contrast: #ffffff;
+  --card: #ffffff;
+  --border: #e3e1dd;
+  --danger: #c4493f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15161a;
+    --fg: #ececec;
+    --muted: #9a9a9a;
+    --accent: #7c8cfb;
+    --accent-contrast: #0e0e12;
+    --card: #1e2024;
+    --border: #2d2f34;
+    --danger: #e0756a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem 1rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.app-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--fg);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.nav-btn.active {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border-color: var(--accent);
+}
+
+main {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.view {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#view-home {
+  text-align: center;
+  padding-top: 2rem;
+}
+
+.mode-line {
+  margin: 0;
+  color: var(--muted);
+}
+
+.listening {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+button {
+  font: inherit;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.btn-secondary {
+  background: var(--card);
+  color: var(--fg);
+  border-color: var(--border);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="time"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--fg);
+  font-size: 1rem;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.field-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.checkbox-label input {
+  width: auto;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.cadence-fieldset {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+.cadence-fieldset label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.3rem 0;
+}
+
+.cadence-fieldset input {
+  width: auto;
+}
+
+.active-hours-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.active-hours-row > * {
+  flex: 1;
+}
+
+.history-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.history-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+.history-item-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.category-badge {
+  background: var(--accent);
+  color: var(--accent-contrast);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+.history-time {
+  color: var(--muted);
+  font-size: 0.8rem;
+  flex: 1;
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.history-thought {
+  font-weight: 600;
+}
+
+.history-details {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
+  white-space: pre-wrap;
+}
+
+.categories-editor {
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+
+.categories-list {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.categories-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+}
+
+.btn-remove-category {
+  background: none;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.add-category-row {
+  display: flex;
+  gap: 0.5rem;
+}

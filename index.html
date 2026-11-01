@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thoughts Tracker</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>Thoughts Tracker</h1>
+    <nav class="app-nav">
+      <button type="button" data-view="home" class="nav-btn active">Home</button>
+      <button type="button" data-view="history" class="nav-btn">History</button>
+      <button type="button" data-view="settings" class="nav-btn">Settings</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="view-home" class="view">
+      <div id="home-idle">
+        <p class="mode-line">Mode: <strong id="home-mode-label"></strong></p>
+        <p class="hint">You'll be notified once at a random point — you won't know exactly when.</p>
+        <button type="button" id="btn-start" class="btn-primary">Start</button>
+      </div>
+      <div id="home-active" hidden>
+        <p class="listening">Listening&hellip;</p>
+        <p class="hint">A chime will come sometime soon. Keep this tab open.</p>
+        <button type="button" id="btn-stop" class="btn-secondary">Stop</button>
+      </div>
+    </section>
+
+    <section id="view-capture" class="view" hidden>
+      <h2>What was the thought?</h2>
+      <input type="text" id="capture-thought" placeholder="One line&hellip;" autocomplete="off" />
+      <textarea id="capture-details" rows="6" placeholder="Write everything about it&hellip;"></textarea>
+      <label class="field-label">
+        Category
+        <select id="capture-category"></select>
+      </label>
+      <div class="actions">
+        <button type="button" id="btn-save" class="btn-primary">Save</button>
+        <button type="button" id="btn-skip" class="btn-secondary">Skip</button>
+      </div>
+    </section>
+
+    <section id="view-history" class="view" hidden>
+      <div class="history-controls">
+        <select id="history-filter"></select>
+        <button type="button" id="btn-export" class="btn-secondary">Export JSON</button>
+      </div>
+      <ul id="history-list" class="history-list"></ul>
+      <p id="history-empty" class="hint" hidden>No entries yet.</p>
+    </section>
+
+    <section id="view-settings" class="view" hidden>
+      <form id="settings-form">
+        <label class="field-label">
+          Window length (minutes)
+          <input type="number" id="setting-window-minutes" min="0.1" step="0.1" />
+        </label>
+
+        <fieldset class="cadence-fieldset">
+          <legend>Cadence mode</legend>
+          <label><input type="radio" name="cadenceMode" value="manual" /> Manual per session</label>
+          <label><input type="radio" name="cadenceMode" value="allDay" /> Repeating all day</label>
+          <label><input type="radio" name="cadenceMode" value="fixedCount" /> Fixed count per day</label>
+        </fieldset>
+
+        <label class="field-label">
+          Fixed count per day
+          <input type="number" id="setting-fixed-count" min="1" step="1" />
+        </label>
+
+        <div class="active-hours-row">
+          <label class="field-label">
+            Active hours start
+            <input type="time" id="setting-active-start" />
+          </label>
+          <label class="field-label">
+            Active hours end
+            <input type="time" id="setting-active-end" />
+          </label>
+        </div>
+
+        <label class="checkbox-label">
+          <input type="checkbox" id="setting-sound-enabled" />
+          Sound enabled
+        </label>
+        <button type="button" id="btn-test-sound" class="btn-secondary">&#128266; Test Sound</button>
+
+        <div class="categories-editor">
+          <h3>Categories</h3>
+          <ul id="categories-list" class="categories-list"></ul>
+          <div class="add-category-row">
+            <input type="text" id="new-category-input" placeholder="New category" />
+            <button type="button" id="btn-add-category" class="btn-secondary">Add</button>
+          </div>
+        </div>
+
+        <p id="notification-permission-note" class="hint"></p>
+      </form>
+    </section>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
