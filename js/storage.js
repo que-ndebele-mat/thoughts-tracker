@@ -4,9 +4,7 @@ const ENTRIES_KEY = "thoughts-tracker:entries";
 export const DEFAULT_SETTINGS = {
   windowMinutes: 10,
   variation: "uniform",
-  cadenceMode: "manual",
-  activeHours: { start: "08:00", end: "22:00" },
-  fixedCountPerDay: 8,
+  repeat: false,
   soundEnabled: true,
   categories: [
     "Work",
@@ -24,11 +22,7 @@ export function loadSettings() {
   if (!raw) return structuredClone(DEFAULT_SETTINGS);
   try {
     const parsed = JSON.parse(raw);
-    return {
-      ...structuredClone(DEFAULT_SETTINGS),
-      ...parsed,
-      activeHours: { ...DEFAULT_SETTINGS.activeHours, ...parsed.activeHours },
-    };
+    return { ...structuredClone(DEFAULT_SETTINGS), ...parsed };
   } catch {
     return structuredClone(DEFAULT_SETTINGS);
   }

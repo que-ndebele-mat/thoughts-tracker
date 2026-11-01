@@ -39,22 +39,22 @@ list of targets.
 
 ## How it works
 
-**Cadence modes** (Settings → Cadence mode):
+Open the app, hit **Start** — that's the default experience, no setup
+required. A 10-minute window starts; sometime within it you get a chime and a
+capture screen.
 
-- **Manual per session** — you tap Start, get notified once within the
-  window, capture it, and it stops. Tap Start again whenever you want the
-  next one.
-- **Repeating all day** — as soon as one window is captured (or skipped), the
-  next one starts automatically, for as long as the app is running, within
-  your configured active hours.
-- **Fixed count per day** — set a target number of check-ins; the app splits
-  your active hours into that many slots and picks one random moment inside
-  each.
+Two settings control everything:
 
-**Settings** (window length, variation, cadence mode, active hours, fixed
-count, categories, sound) all live in one settings object in `localStorage`
-and are fully editable from the Settings screen — nothing about the timing is
-hardcoded.
+- **Window length** (minutes) — how long each window is. Default 10.
+- **Repeat** (Settings → "Automatically start the next window after each
+  capture") — off by default (one window per Start tap). Turn it on to keep
+  going all day: as soon as you save or skip a capture, the next window
+  starts right away, automatically, for as long as you leave the app open.
+  There's no time-of-day concept anywhere — it's purely "keep chaining
+  sessions back to back."
+
+Window length, repeat, categories, and sound all live in one settings object
+in `localStorage`, fully editable from the Settings screen.
 
 **Sound**: a short two-tone chime, synthesized in the browser with the Web
 Audio API (no audio file to load or license). It plays on every real
@@ -72,17 +72,13 @@ dependency.
 
 - **The tab has to stay open.** This is a static site with no backend and no
   service worker, so scheduling lives in plain JavaScript timers in the page.
-  That's a non-issue for Manual mode (the window is short and you're actively
-  there), but for All-day / Fixed-count mode it means keeping the tab open
-  (e.g. pinned) for the whole stretch you want it covering.
-- **Nothing survives a page reload or browser restart.** A running all-day or
-  fixed-count schedule is in-memory only; reloading the page returns you to
-  idle and you'd need to tap Start again.
+  That's a non-issue with a single window, but with repeat on for a whole day
+  it means keeping the tab open (e.g. pinned) the whole time.
+- **Nothing survives a page reload or browser restart.** A running repeat
+  chain is in-memory only; reloading the page returns you to idle and you'd
+  need to tap Start again.
 - **No accounts, no sync.** Entries live in this browser's `localStorage`
   only. Use the **Export JSON** button in History to get your data out.
-- If a new window fires while you still have an uncaptured one open (only
-  possible in all-day/fixed-count modes), the overlapping one is silently
-  dropped rather than stacking screens.
 
 ## File layout
 
@@ -92,7 +88,7 @@ css/style.css
 js/storage.js        — localStorage read/write for settings + entries
 js/sound.js           — synthesized chime (playChime) + AudioContext unlock
 js/notifications.js   — browser Notification permission + display
-js/scheduler.js       — manual / all-day / fixed-count timing logic
+js/scheduler.js       — window timing + repeat chaining logic
 js/app.js             — view wiring and all UI event handling
 Makefile              — local serve + full deploy pipeline
 ```

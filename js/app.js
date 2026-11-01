@@ -32,8 +32,7 @@ function showView(name) {
 const scheduler = new Scheduler({
   getSettings: () => settings,
   onFire: () => {
-    // A capture is already in progress (e.g. all-day/fixed-count mode
-    // overlapping a slow capture) — drop this fire rather than stacking views.
+    // A capture is already in progress — drop this fire rather than stacking views.
     if (capturePending) return;
     capturePending = true;
     pendingFiredAt = new Date().toISOString();
@@ -46,23 +45,16 @@ const scheduler = new Scheduler({
 
 const homeIdle = document.getElementById("home-idle");
 const homeActive = document.getElementById("home-active");
-const homeModeLabel = document.getElementById("home-mode-label");
+const homeWindowLabel = document.getElementById("home-window-label");
+const homeActiveHint = document.getElementById("home-active-hint");
 const btnStart = document.getElementById("btn-start");
 const btnStop = document.getElementById("btn-stop");
 
-function modeLabel(mode) {
-  switch (mode) {
-    case "allDay":
-      return "Repeating all day";
-    case "fixedCount":
-      return `Fixed count (${settings.fixedCountPerDay}/day)`;
-    default:
-      return "Manual per session";
-  }
-}
-
 function renderHome() {
-  homeModeLabel.textContent = modeLabel(settings.cadenceMode);
+  homeWindowLabel.textContent = `${settings.windowMinutes} min`;
+  homeActiveHint.textContent = settings.repeat
+    ? "A chime will come sometime soon, then the next window starts automatically. Keep this tab open."
+    : "A chime will come sometime soon. Keep this tab open.";
   homeIdle.hidden = scheduler.running;
   homeActive.hidden = !scheduler.running;
 }
@@ -106,15 +98,9 @@ function resetCaptureForm() {
 function finishCapture() {
   capturePending = false;
   resetCaptureForm();
+  scheduler.continueAfterCapture();
   showView("home");
   renderHome();
-  if (scheduler.mode === "allDay") {
-    scheduler.continueAllDay();
-  } else if (scheduler.mode === "manual") {
-    scheduler.stop();
-    renderHome();
-  }
-  // fixedCount: remaining slots for the day are already scheduled, nothing to do.
 }
 
 btnSave.addEventListener("click", () => {
@@ -218,9 +204,7 @@ btnExport.addEventListener("click", () => {
 // ---------- Settings view ----------
 
 const settingWindowMinutes = document.getElementById("setting-window-minutes");
-const settingFixedCount = document.getElementById("setting-fixed-count");
-const settingActiveStart = document.getElementById("setting-active-start");
-const settingActiveEnd = document.getElementById("setting-active-end");
+const settingRepeat = document.getElementById("setting-repeat");
 const settingSoundEnabled = document.getElementById("setting-sound-enabled");
 const btnTestSound = document.getElementById("btn-test-sound");
 const categoriesList = document.getElementById("categories-list");
@@ -229,17 +213,11 @@ const btnAddCategory = document.getElementById("btn-add-category");
 const notificationPermissionNote = document.getElementById(
   "notification-permission-note",
 );
-const cadenceRadios = document.querySelectorAll('input[name="cadenceMode"]');
 
 function renderSettingsForm() {
   settingWindowMinutes.value = settings.windowMinutes;
-  settingFixedCount.value = settings.fixedCountPerDay;
-  settingActiveStart.value = settings.activeHours.start;
-  settingActiveEnd.value = settings.activeHours.end;
+  settingRepeat.checked = settings.repeat;
   settingSoundEnabled.checked = settings.soundEnabled;
-  cadenceRadios.forEach((r) => {
-    r.checked = r.value === settings.cadenceMode;
-  });
   renderCategoriesList();
   notificationPermissionNote.textContent = `Browser notification permission: ${permissionStatus()}. Sound plays regardless, as long as this tab is open.`;
 }
@@ -274,36 +252,14 @@ settingWindowMinutes.addEventListener("change", () => {
   }
 });
 
-settingFixedCount.addEventListener("change", () => {
-  const val = parseInt(settingFixedCount.value, 10);
-  if (val > 0) {
-    settings.fixedCountPerDay = val;
-    persistSettings();
-  }
-});
-
-settingActiveStart.addEventListener("change", () => {
-  settings.activeHours.start = settingActiveStart.value;
-  persistSettings();
-});
-
-settingActiveEnd.addEventListener("change", () => {
-  settings.activeHours.end = settingActiveEnd.value;
+settingRepeat.addEventListener("change", () => {
+  settings.repeat = settingRepeat.checked;
   persistSettings();
 });
 
 settingSoundEnabled.addEventListener("change", () => {
   settings.soundEnabled = settingSoundEnabled.checked;
   persistSettings();
-});
-
-cadenceRadios.forEach((radio) => {
-  radio.addEventListener("change", () => {
-    if (radio.checked) {
-      settings.cadenceMode = radio.value;
-      persistSettings();
-    }
-  });
 });
 
 btnTestSound.addEventListener("click", () => {

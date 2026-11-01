@@ -4,64 +4,68 @@ A mindfulness app for catching what's actually going through your head, in the m
 
 ## Concept
 
-You start a **window**. At some random point within it, the app notifies you.
-When it does, you stop and capture: what was the thought, write freely about
-it, and tag it with a category. Then another window begins — either because
-you start it, or automatically, depending on cadence mode — and the cycle
-repeats.
+You open the app and hit **Start** — no setup, no decisions. A 10-minute
+window begins. At some random point within it, the app notifies you. When it
+does, you stop and capture: what was the thought, write freely about it, and
+tag it with a category. Then the window ends.
 
-The window length and how windows chain together are both configurable
-settings, not fixed behavior — someone might want a quick 10-minute window
-started by hand, or random check-ins running continuously across the whole
-day.
+If you want to keep going (e.g. across a whole day), flip on **repeat** in
+Settings: once that's on, finishing a capture immediately starts the next
+window, back to back, for as long as you keep the app open. This is purely
+session-chaining — there's no clock-time scheduling involved (no "active
+hours," no fixed slots per day). It's just: window → capture → (if repeat is
+on) next window.
+
+The window length is the one thing worth changing per person, so it's a
+single editable setting (default 10 minutes) — everything else about cadence
+is just the one on/off repeat toggle.
 
 The randomness matters — you can't anticipate the prompt and perform a thought
 for it. It's meant to catch what's really there.
 
 ## Core user flow
 
-1. User opens the app and taps **Start Session**.
-2. App picks a random moment within the current window length and schedules a
-   notification for it.
+1. User opens the app — Home shows the window length and a **Start** button,
+   nothing else to decide.
+2. User taps **Start**. App picks a random moment within the window length
+   and schedules a notification for it.
 3. User goes about whatever they were doing.
 4. Notification fires → user opens/returns to the app.
 5. Capture screen:
    - Free-text field: "What was the thought?"
    - Larger free-text field: write everything about it.
    - Category picker (single-select, preset list, editable).
-   - Save.
+   - Save (or Skip).
 6. Entry is stored with a timestamp.
-7. Depending on cadence mode (see Settings below), either a new window starts
-   automatically, or the user taps **Start Session** again.
+7. If **repeat** is on (Settings), the next window starts immediately. If
+   not, the user is back at Home and taps **Start** again whenever they want.
 8. A history/log view lists past entries, filterable by category.
 
 ## Settings (must be easy to change, not hardcoded)
 
-All of these are user-editable settings, stored in `localStorage` alongside
-entries — not constants buried in code. Changing them should require no code
-edits, just a settings screen.
+Kept deliberately minimal — the whole point is that someone should be able to
+walk in and use the default without reading anything. All of these live in
+one `settings` object in `localStorage`, editable from a Settings screen:
 
-- **Window length** — how long the random window is (default 10 minutes).
-  Exposed as a single editable number (minutes).
+- **Window length** — how long the random window is (default 10 minutes). A
+  single editable number (minutes). This is the one setting most people will
+  actually want to change.
+- **Repeat** — on/off. Off (default): one window per Start tap. On: the next
+  window starts automatically right after each capture, so someone can run
+  this continuously across a whole day just by leaving it on — purely
+  session-chained, no time-of-day concept involved anywhere.
 - **Variation** — how the random point within the window is chosen. Default
-  is uniform random across the whole window, but expose this as its own
-  setting so it can be swapped later (e.g. biased toward the middle, or a
-  min/max gap between notifications) without redesigning the scheduler.
-- **Cadence mode** — how windows chain together over time:
-  - *Manual per session* (default): user explicitly starts each window; after
-    capture, nothing more happens until they start again.
-  - *Repeating all day*: as soon as one window closes (captured or expired),
-    the next window starts automatically, continuously, during active hours.
-  - *Fixed count per day*: user sets a target number of check-ins; app spaces
-    windows across active hours and randomizes within each.
-- **Active hours** — start/end time of day during which windows are allowed
-  to fire (relevant for *repeating all day* and *fixed count* modes; ignored
-  for *manual per session*). Default could be e.g. 08:00–22:00.
+  (and only implementation so far) is uniform random across the whole window;
+  kept as its own setting so it can be swapped later (e.g. biased toward the
+  middle) without redesigning the scheduler.
 
 Implementation note: model this as one `settings` object
-(`{ windowMinutes, variation, cadenceMode, activeHours }`) read by the
-scheduler, so changing a value anywhere (UI, or directly in storage for
-testing) takes effect without touching scheduling logic.
+(`{ windowMinutes, variation, repeat }`) read by the scheduler, so changing a
+value anywhere (UI, or directly in storage for testing) takes effect without
+touching scheduling logic. Earlier drafts had a clock-time "active hours" /
+"fixed count per day" model — deliberately dropped because it was confusing
+and solved "I want this running all day" the wrong way; the `repeat` toggle
+solves it with zero added concepts.
 
 ## Categories (default preset, user-editable)
 
@@ -86,15 +90,17 @@ list in local storage, not hardcoded.
 - **Persistence:** `localStorage` in the browser. No accounts, no sync. Data
   lives on whatever device/browser the session ran in.
 - **Notifications:** browser [Notification API](https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API),
-  requested on first "Start Session". This only works while the tab/app is
-  open (or the browser is running, depending on OS).
-  - For *manual per session* this is a non-issue — the window is short and
-    the user is actively engaged.
-  - For *repeating all day* / *fixed count per day*, this is a real
+  requested on first **Start**, plus a synthesized sound (Web Audio API, no
+  asset needed) that plays regardless of notification permission. Both only
+  work while the tab/app is open (or the browser is running, depending on
+  OS).
+  - With repeat off, this is a non-issue — the window is short and the user
+    is actively engaged.
+  - With repeat on (running continuously, e.g. across a day), this is a real
     limitation worth being upfront about: the tab has to stay open (e.g.
-    pinned in the background) all day for notifications to keep firing. Good
-    enough for a POC; a real all-day experience would eventually need a
-    service worker + push backend (see Open questions).
+    pinned in the background) for notifications to keep firing. Good enough
+    for a POC; a real always-on experience would eventually need a service
+    worker + push backend (see Open questions).
   - This is *not* a real push-notification system — no service worker /
     server push needed for the POC.
 - Random timing: `Math.random() * windowMinutes * 60 * 1000` ms from window

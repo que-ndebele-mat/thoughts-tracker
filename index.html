@@ -19,13 +19,13 @@
   <main>
     <section id="view-home" class="view">
       <div id="home-idle">
-        <p class="mode-line">Mode: <strong id="home-mode-label"></strong></p>
-        <p class="hint">You'll be notified once at a random point — you won't know exactly when.</p>
+        <p class="mode-line">Window: <strong id="home-window-label"></strong></p>
+        <p class="hint">You'll be notified once at a random point in the window — you won't know exactly when.</p>
         <button type="button" id="btn-start" class="btn-primary">Start</button>
       </div>
       <div id="home-active" hidden>
         <p class="listening">Listening&hellip;</p>
-        <p class="hint">A chime will come sometime soon. Keep this tab open.</p>
+        <p class="hint" id="home-active-hint">A chime will come sometime soon. Keep this tab open.</p>
         <button type="button" id="btn-stop" class="btn-secondary">Stop</button>
       </div>
     </section>
@@ -60,28 +60,10 @@
           <input type="number" id="setting-window-minutes" min="0.1" step="0.1" />
         </label>
 
-        <fieldset class="cadence-fieldset">
-          <legend>Cadence mode</legend>
-          <label><input type="radio" name="cadenceMode" value="manual" /> Manual per session</label>
-          <label><input type="radio" name="cadenceMode" value="allDay" /> Repeating all day</label>
-          <label><input type="radio" name="cadenceMode" value="fixedCount" /> Fixed count per day</label>
-        </fieldset>
-
-        <label class="field-label">
-          Fixed count per day
-          <input type="number" id="setting-fixed-count" min="1" step="1" />
+        <label class="checkbox-label">
+          <input type="checkbox" id="setting-repeat" />
+          Automatically start the next window after each capture
         </label>
-
-        <div class="active-hours-row">
-          <label class="field-label">
-            Active hours start
-            <input type="time" id="setting-active-start" />
-          </label>
-          <label class="field-label">
-            Active hours end
-            <input type="time" id="setting-active-end" />
-          </label>
-        </div>
 
         <label class="checkbox-label">
           <input type="checkbox" id="setting-sound-enabled" />
